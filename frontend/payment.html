@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Payment</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<style>
+body{
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  color:white;
+}
+
+.card{
+  background:rgba(255,255,255,0.1);
+  padding:40px;
+  border-radius:20px;
+  backdrop-filter:blur(20px);
+  width:350px;
+  text-align:center;
+  box-shadow:0 10px 40px rgba(0,0,0,0.5);
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+  border-radius:10px;
+  border:none;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:30px;
+  background:linear-gradient(90deg,#ff512f,#dd2476);
+  color:white;
+  font-weight:600;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  transform:scale(1.05);
+}
+</style>
+</head>
+
+<body>
+<div class="card">
+<h2>Secure Payment</h2>
+<p>Amount: Rs.299</p>
+
+<input type="text" placeholder="Card Number">
+<input type="text" placeholder="Expiry Date">
+<input type="text" placeholder="CVV">
+
+<button onclick="completePayment()">Pay Now</button>
+</div>
+
+<script>
+function completePayment(){
+  window.location.href="success.html";
+}
+</script>
+</body>
+</html>

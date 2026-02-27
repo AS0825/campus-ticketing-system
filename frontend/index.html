@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Sahyadri Fest 2026</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
+
+body{
+  background:#0f172a;
+  color:white;
+  overflow-x:hidden;
+  animation:fadeIn 1s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0;}
+  to{opacity:1;}
+}
+
+/* NAVBAR */
+nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:20px 60px;
+  background:#111827;
+  box-shadow:0 5px 20px rgba(0,0,0,0.5);
+}
+
+.logo{
+  font-size:22px;
+  font-weight:700;
+  color:#ff4d6d;
+}
+
+nav ul{
+  list-style:none;
+  display:flex;
+  gap:30px;
+  align-items:center;
+}
+
+nav ul li{
+  cursor:pointer;
+  transition:0.3s;
+}
+
+nav ul li:hover{
+  color:#ff4d6d;
+}
+
+/* ADMIN BUTTON */
+.admin-btn{
+  padding:8px 15px;
+  background:#ff416c;
+  color:white;
+  border-radius:20px;
+  text-decoration:none;
+  font-weight:500;
+  transition:0.3s;
+}
+
+.admin-btn:hover{
+  background:#ff4b2b;
+  transform:scale(1.05);
+}
+
+/* HERO */
+.hero{
+  text-align:center;
+  padding:60px 20px;
+}
+
+.hero h1{
+  font-size:40px;
+  margin-bottom:10px;
+}
+
+.hero p{
+  opacity:0.7;
+}
+
+/* EVENT CARDS */
+.container{
+  display:flex;
+  justify-content:center;
+  gap:40px;
+  flex-wrap:wrap;
+  padding:40px;
+}
+
+.card{
+  width:320px;
+  border-radius:20px;
+  overflow:hidden;
+  background:#1e293b;
+  box-shadow:0 0 20px rgba(255,0,100,0.2);
+  transition:0.4s;
+  position:relative;
+}
+
+.card:hover{
+  transform:translateY(-10px);
+  box-shadow:0 0 30px rgba(255,0,100,0.8);
+}
+
+.card img{
+  width:100%;
+  height:200px;
+  object-fit:cover;
+}
+
+.card-content{
+  padding:20px;
+  text-align:center;
+}
+
+button{
+  margin-top:15px;
+  padding:10px 20px;
+  border:none;
+  border-radius:30px;
+  background:linear-gradient(90deg,#ff416c,#ff4b2b);
+  color:white;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  transform:scale(1.1);
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+  <div class="logo">SahyadriFest</div>
+  <ul>
+    <li>Home</li>
+    <li>Events</li>
+    <li onclick="openContact()">Contact</li>
+    <li>
+      <a href="admin.html" class="admin-btn">Admin Dashboard</a>
+    </li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <h1>Welcome to Sahyadri Fest 2026</h1>
+  <p>Book your tickets. Experience the magic.</p>
+</div>
+
+<div class="container">
+
+  <div class="card">
+    <img src="images/tech.jpg" alt="Tech Summit">
+    <div class="card-content">
+      <h2>Tech Summit</h2>
+      <p>March 10 | Nethravathi Auditorium</p>
+      <button onclick="goToBooking('Tech Summit')">Book Ticket</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <img src="images/cultural.jpg" alt="Cultural Night">
+    <div class="card-content">
+      <h2>Cultural Night</h2>
+      <p>March 15 | Open Ground</p>
+      <button onclick="goToBooking('Cultural Night')">Book Ticket</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <img src="images/gaming.jpg" alt="Gaming Arena">
+    <div class="card-content">
+      <h2>Gaming Arena</h2>
+      <p>March 18 | Back Ground</p>
+      <button onclick="goToBooking('Gaming Arena')">Book Ticket</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function goToBooking(event){
+  localStorage.setItem("selectedEvent",event);
+  window.location.href="booking.html";
+}
+</script>
+<!-- CONTACT MODAL -->
+<div id="contactModal" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+justify-content:center;
+align-items:center;
+z-index:1000;">
+
+<div style="
+background:white;
+color:black;
+padding:30px;
+border-radius:20px;
+width:300px;
+text-align:center;">
+
+<h2>Contact Us</h2>
+<p>Email: sahyadrifest@gmail.com</p>
+<p>Phone: +91 98765 43210</p>
+<button onclick="closeContact()">Close</button>
+</div>
+</div>
+
+<script>
+function openContact(){
+  document.getElementById("contactModal").style.display="flex";
+}
+
+function closeContact(){
+  document.getElementById("contactModal").style.display="none";
+}
+</script>
+</body>
+</html>

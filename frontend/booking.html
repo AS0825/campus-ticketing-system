@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Book Ticket</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+  font-family:'Poppins',sans-serif;
+  background: linear-gradient(135deg, #141e30, #243b55);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  margin:0;
+  color:white;
+  animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+.form-box{
+  background:white;
+  padding:40px;
+  border-radius:20px;
+  width:400px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.3);
+  color:black;
+}
+
+h2{text-align:center;margin-bottom:20px;}
+
+input,select{
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+
+.seat-grid{
+  display:grid;
+  grid-template-columns:repeat(5,50px);
+  gap:10px;
+  justify-content:center;
+  margin-bottom:20px;
+}
+
+.seat{
+  background:#ff416c;
+  padding:10px;
+  border-radius:5px;
+  text-align:center;
+  cursor:pointer;
+  color:white;
+}
+
+button{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:30px;
+  background:linear-gradient(90deg,#36d1dc,#5b86e5);
+  color:white;
+  font-weight:500;
+  cursor:pointer;
+  transition:0.3s;
+}
+
+button:hover{
+  transform:scale(1.05);
+}
+</style>
+</head>
+
+<body>
+
+<div class="form-box">
+  <h2 id="eventTitle"></h2>
+
+  <input type="text" id="name" placeholder="Full Name" required>
+  <input type="email" id="email" placeholder="Email Address" required>
+  <input type="text" placeholder="USN / Student ID" required>
+
+  <select>
+    <option>Select Year</option>
+    <option>1st Year</option>
+    <option>2nd Year</option>
+    <option>3rd Year</option>
+    <option>4th Year</option>
+  </select>
+
+  <select>
+    <option>Choose Department</option>
+    <option>CSE</option>
+    <option>ISE</option>
+    <option>ECE</option>
+    <option>AIML</option>
+    <option>MECH/RA</option>
+  </select>
+
+  <h3 style="text-align:center;">Select Seat</h3>
+
+  <div class="seat-grid" id="seatContainer"></div>
+
+  <button onclick="goToPayment()">Proceed to Payment</button>
+</div>
+
+<script>
+// Show selected event
+document.getElementById("eventTitle").innerText =
+"Booking for " + localStorage.getItem("selectedEvent");
+
+// Generate seats
+const seatContainer = document.getElementById("seatContainer");
+
+for(let i=1;i<=20;i++){
+  const seat = document.createElement("div");
+  seat.classList.add("seat");
+  seat.innerText = i;
+  seat.onclick = function(){
+    document.querySelectorAll(".seat").forEach(s => s.style.background="#ff416c");
+    seat.style.background="green";
+    localStorage.setItem("seat", seat.innerText);
+  };
+  seatContainer.appendChild(seat);
+}
+
+// Backend booking
+async function goToPayment(){
+  const name = document.getElementById("name").value;
+  const email = document.getElementById("email").value;
+  const event = localStorage.getItem("selectedEvent");
+  const seat = localStorage.getItem("seat");
+
+  if(!name || !email || !seat){
+    alert("Please fill all fields and select seat!");
+    return;
+  }
+
+  const response = await fetch("http://localhost:5000/book",{
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name,
+      email,
+      event,
+      seat
+    })
+  });
+
+  const data = await response.json();
+  localStorage.setItem("ticketID", data.ticket_id);
+
+  window.location.href="success.html";
+}
+</script>
+
+</body>
+</html>
