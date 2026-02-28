@@ -1,100 +1,224 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Admin Dashboard</title>
-
+<title>Admin Dashboard - Sahyadri Fest 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
-
 <style>
 body{
-  background:#111827;
-  color:white;
   font-family:'Poppins',sans-serif;
-  padding:40px;
-}
-
-h1{
-  margin-bottom:30px;
-}
-
-.card{
-  background:#1e293b;
+  background: url('images/bg.jpg') no-repeat center center fixed;
+  background-size: cover;
+  margin:0;
   padding:20px;
-  border-radius:20px;
-  margin-bottom:20px;
-  box-shadow:0 5px 20px rgba(0,0,0,0.4);
+  color:white;
 }
 
-input{
+/* HEADER */
+h1{
+  text-align:center;
+  margin-bottom:40px;
+  color:#ff4b2b;
+  text-shadow: 2px 2px 5px #000;
+}
+
+/* CONTAINER */
+.container{
+  display:flex;
+  flex-wrap:wrap;
+  gap:30px;
+  justify-content:center;
+}
+
+/* CARDS */
+.card{
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(10px);
+  padding:25px;
+  border-radius:20px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.5);
+  flex:1;
+  min-width:350px;
+}
+
+/* HEADINGS */
+.card h2{
+  margin-bottom:20px;
+  color:#ff6b81;
+  text-align:center;
+}
+
+/* INPUTS */
+input, select{
+  width:100%;
   padding:10px;
+  margin:8px 0;
   border-radius:10px;
   border:none;
-  margin-top:20px;
-  width:250px;
+  outline:none;
+  font-size:14px;
 }
 
+/* BUTTONS */
 button{
-  padding:10px 20px;
+  width:100%;
+  padding:12px;
   border:none;
-  border-radius:20px;
-  margin-left:10px;
-  cursor:pointer;
-  background:#36d1dc;
+  border-radius:30px;
+  background:linear-gradient(90deg,#36d1dc,#5b86e5);
   color:white;
   font-weight:500;
+  cursor:pointer;
+  transition:0.3s;
+  margin-top:10px;
+}
+button:hover{
+  transform:scale(1.05);
+  background:linear-gradient(90deg,#5b86e5,#36d1dc);
 }
 
-button:hover{
-  background:#5b86e5;
+/* EVENT LIST */
+#eventList{
+  margin-top:15px;
+  list-style:none;
+  padding-left:0;
+}
+#eventList li{
+  padding:5px 10px;
+  background: rgba(255,255,255,0.1);
+  border-radius:8px;
+  margin-bottom:5px;
+}
+
+/* REGISTRATION TABLE */
+table{
+  width:100%;
+  border-collapse: collapse;
+  margin-top:20px;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 5px 20px rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.6);
+}
+
+table th, table td{
+  padding:12px;
+  text-align:left;
+  border-bottom:1px solid #444;
+  font-size:14px;
+}
+
+table th{
+  background: linear-gradient(90deg,#ff416c,#ff4b2b);
+  color:white;
+  font-weight:600;
+}
+
+table tr:hover{
+  background: rgba(255,255,255,0.1);
 }
 </style>
 </head>
-
 <body>
 
-<h1>Admin Dashboard</h1>
+<h1>Admin Dashboard - Sahyadri Fest 2026</h1>
 
-<div class="card">
-  <h3>Total Bookings</h3>
-  <p id="totalBookings">Loading...</p>
+<div class="container">
+  <!-- Add Event Card -->
+  <div class="card">
+    <h2>Add New Event</h2>
+    <input type="text" id="eventName" placeholder="Event Name">
+    <input type="date" id="eventDate">
+    <input type="text" id="eventVenue" placeholder="Venue">
+    <button onclick="addEvent()">Add Event</button>
+
+    <h3 style="margin-top:20px;">Current Events</h3>
+    <ul id="eventList"></ul>
+  </div>
+
+  <!-- View Registrations Card -->
+  <div class="card" style="min-width:600px;">
+    <h2>Student Registrations</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>USN</th>
+          <th>Year</th>
+          <th>Dept</th>
+          <th>Seat</th>
+          <th>Event</th>
+        </tr>
+      </thead>
+      <tbody id="registrationTable">
+        <!-- Rows added dynamically -->
+      </tbody>
+    </table>
+  </div>
 </div>
-
-<div class="card">
-  <h3>Available Seats</h3>
-  <p id="availableSeats">Loading...</p>
-</div>
-
-<h3>Validate Ticket</h3>
-<input type="text" id="ticketInput" placeholder="Enter Ticket Code">
-<button onclick="validateTicket()">Validate</button>
 
 <script>
-// Load booking stats from backend
-async function loadStats(){
-  const response = await fetch("http://localhost:5000/stats");
-  const data = await response.json();
+// ======== EVENT MANAGEMENT ========
+let events = JSON.parse(localStorage.getItem("events")) || [];
 
-  document.getElementById("totalBookings").innerText = data.total;
-  document.getElementById("availableSeats").innerText = 200 - data.total; 
-  // 200 = total seats (change if needed)
+function renderEvents(){
+  const list = document.getElementById("eventList");
+  list.innerHTML = "";
+  events.forEach(e=>{
+    const li = document.createElement("li");
+    li.innerText = `${e.name} | ${e.date} | ${e.venue}`;
+    list.appendChild(li);
+  });
 }
 
-loadStats();
+function addEvent(){
+  const name = document.getElementById("eventName").value.trim();
+  const date = document.getElementById("eventDate").value;
+  const venue = document.getElementById("eventVenue").value.trim();
 
-// Validate ticket
-async function validateTicket(){
-  let code = document.getElementById("ticketInput").value;
-
-  if(!code){
-    alert("Enter ticket code!");
+  if(!name || !date || !venue){
+    alert("Please fill all event details!");
     return;
   }
 
-  const response = await fetch("http://localhost:5000/validate/" + code);
-  const data = await response.json();
+  events.push({name,date,venue});
+  localStorage.setItem("events", JSON.stringify(events));
+  renderEvents();
 
-  alert(data.status);
+  // Clear inputs
+  document.getElementById("eventName").value="";
+  document.getElementById("eventDate").value="";
+  document.getElementById("eventVenue").value="";
 }
+
+renderEvents();
+
+// ======== VIEW REGISTRATIONS ========
+function loadRegistrations(){
+  let registrations = JSON.parse(localStorage.getItem("registrations")) || [
+    {name:"Abhijna Shetty", email:"abhijnashetty2005@gmail.com", usn:"45612378952", year:"2nd Year", dept:"ISE", seat:"5", event:"Cultural Night"},
+    {name:"Rahul Kumar", email:"rahul.k@example.com", usn:"45612378953", year:"3rd Year", dept:"CSE", seat:"3", event:"Tech Summit"},
+    {name:"Ananya Rao", email:"ananya.r@example.com", usn:"45612378954", year:"1st Year", dept:"ECE", seat:"1", event:"Gaming Arena"}
+  ];
+
+  const tbody = document.getElementById("registrationTable");
+  tbody.innerHTML = "";
+  registrations.forEach(r=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${r.name}</td>
+      <td>${r.email}</td>
+      <td>${r.usn}</td>
+      <td>${r.year}</td>
+      <td>${r.dept}</td>
+      <td>${r.seat}</td>
+      <td>${r.event}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+loadRegistrations();
 </script>
 
 </body>
