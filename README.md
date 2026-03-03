@@ -45,7 +45,7 @@ MySQL Database
         ↓
 Docker Containers (Isolated Deployment)
 
-## 🔄 Booking Workflow
+## Booking Workflow
 1. User selects event
 2. Seat availability is fetched from backend
 3. User selects seat
@@ -54,6 +54,6 @@ Docker Containers (Isolated Deployment)
 6. Booking stored in database
 7. Seat becomes unavailable
 
-## 📦 How to Run (Docker)
+## How to Run (Docker)
 ```bash
 docker compose up --build
