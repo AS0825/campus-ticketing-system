@@ -14,11 +14,31 @@ body{
 }
 
 /* HEADER */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:30px;
+}
+
 h1{
-  text-align:center;
-  margin-bottom:40px;
   color:#ff4b2b;
   text-shadow: 2px 2px 5px #000;
+  margin:0;
+}
+
+/* BACK BUTTON */
+.back-btn{
+  padding:8px 18px;
+  border-radius:25px;
+  border:none;
+  background:linear-gradient(90deg,#ff512f,#dd2476);
+  color:white;
+  cursor:pointer;
+  font-size:14px;
+}
+.back-btn:hover{
+  transform:scale(1.05);
 }
 
 /* CONTAINER */
@@ -120,7 +140,9 @@ table tr:hover{
 </head>
 <body>
 
-<h1>Admin Dashboard - Sahyadri Fest 2026</h1>
+<div class="header">
+  <h1>Admin Dashboard - Sahyadri Fest 2026</h1>
+</div>
 
 <div class="container">
   <!-- Add Event Card -->
@@ -150,14 +172,21 @@ table tr:hover{
           <th>Event</th>
         </tr>
       </thead>
-      <tbody id="registrationTable">
-        <!-- Rows added dynamically -->
-      </tbody>
+      <tbody id="registrationTable"></tbody>
     </table>
   </div>
 </div>
 
+<div class="footer">
+  <button class="back-btn" onclick="goHome()">Back to Home</button>
+</div>
+
 <script>
+// Back to Home
+function goHome(){
+  window.location.href = "index.html";
+}
+
 // ======== EVENT MANAGEMENT ========
 let events = JSON.parse(localStorage.getItem("events")) || [];
 
@@ -185,7 +214,6 @@ function addEvent(){
   localStorage.setItem("events", JSON.stringify(events));
   renderEvents();
 
-  // Clear inputs
   document.getElementById("eventName").value="";
   document.getElementById("eventDate").value="";
   document.getElementById("eventVenue").value="";

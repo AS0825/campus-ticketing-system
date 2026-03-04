@@ -83,10 +83,6 @@ def booked_seats():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-# -----------------------------------------
-# VALIDATE TICKET
-# -----------------------------------------
 @app.route('/validate/<ticket_id>', methods=['GET'])
 def validate(ticket_id):
     try:
