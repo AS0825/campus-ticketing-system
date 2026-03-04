@@ -4,20 +4,28 @@
 <title>Booking Successful</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
-
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <style>
 body{
-  background:linear-gradient(135deg,#ff416c,#ff4b2b);
+  background:linear-gradient(135deg,#1e3c72,#2a5298);
   display:flex;
   justify-content:center;
   align-items:center;
   height:100vh;
-  color:white;
-  font-family:'Poppins',sans-serif;
-  text-align:center;
   margin:0;
+  font-family:'Poppins',sans-serif;
+  color:white;
+}
+
+.box{
+  background:white;
+  color:#333;
+  padding:40px;
+  border-radius:20px;
+  width:480px;
+  text-align:center;
+  box-shadow:0 20px 40px rgba(0,0,0,0.3);
   animation:fadeIn 1s ease;
 }
 
@@ -26,29 +34,40 @@ body{
   to{opacity:1;transform:translateY(0);}
 }
 
-.box{
-  animation: glow 2s infinite alternate;
+h1{
+  color:#2a5298;
+  margin-bottom:10px;
 }
 
-@keyframes glow{
-  from{box-shadow:0 0 20px #fff;}
-  to{box-shadow:0 0 40px #ffdd00;}
+.details{
+  margin:15px 0;
+  text-align:left;
+  font-size:14px;
+  line-height:1.6;
+  background:#f4f6f9;
+  padding:15px;
+  border-radius:10px;
+}
+
+img{
+  margin-top:15px;
 }
 
 button{
-  margin-top:20px;
-  padding:10px 25px;
+  margin-top:15px;
+  padding:10px 20px;
   border:none;
   border-radius:30px;
-  background:white;
-  color:#ff416c;
+  background:linear-gradient(90deg,#36d1dc,#5b86e5);
+  color:white;
   font-weight:600;
   cursor:pointer;
   transition:0.3s;
+  margin-right:10px;
 }
 
 button:hover{
-  transform:scale(1.1);
+  transform:scale(1.05);
 }
 </style>
 </head>
@@ -56,10 +75,11 @@ button:hover{
 <body>
 
 <div class="box">
-  <h1 id="successTitle">Booking Successful!</h1>
-  <p>See you at the fest! Let the celebration begin</p>
 
-  <br>
+  <h1 id="successTitle">Booking Confirmed!</h1>
+  <p>Your ticket has been successfully booked.</p>
+
+  <div class="details" id="bookingDetails"></div>
 
   <img id="qr" width="150">
 
@@ -67,40 +87,59 @@ button:hover{
 
   <button onclick="downloadTicket()">Download Ticket PDF</button>
   <button onclick="goHome()">Back to Home</button>
+
 </div>
 
 <script>
-// Get ticket ID from localStorage
-var ticketID = localStorage.getItem("ticketID");
-var eventName = localStorage.getItem("selectedEvent");
 
-// If ticketID exists, update heading and QR
+// Get stored data
+const ticketID = localStorage.getItem("ticketID");
+const eventName = localStorage.getItem("selectedEvent");
+const seats = JSON.parse(localStorage.getItem("seats")) || [];
+const name = localStorage.getItem("name");
+const pricePerSeat = 200;
+const total = seats.length * pricePerSeat;
+
+// Update heading if ticket ID exists
 if(ticketID){
   document.getElementById("successTitle").innerText =
-  "Booking Successful! Ticket ID: " + ticketID;
-
-  document.getElementById("qr").src =
-  "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" 
-  + encodeURIComponent(ticketID);
+  "Booking Confirmed! Ticket ID: " + ticketID;
 }
 
-// Confetti effect
+// Show booking details
+document.getElementById("bookingDetails").innerHTML = `
+<strong>Name:</strong> ${name}<br>
+<strong>Event:</strong> ${eventName}<br>
+<strong>Seats:</strong> ${seats.join(", ")}<br>
+<strong>Total Paid:</strong> Rs ${total}
+`;
+
+// Generate QR Code
+document.getElementById("qr").src =
+"https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" +
+encodeURIComponent(
+  `TicketID:${ticketID} | Event:${eventName} | Seats:${seats.join(",")} | Total:₹${total}`
+);
+
+// Confetti animation
 confetti({
-  particleCount: 150,
-  spread: 100,
+  particleCount: 200,
+  spread: 120,
   origin: { y: 0.6 }
 });
 
-// Download demo
+// Download Ticket (Demo for now)
 function downloadTicket(){
-  alert("PDF Downloaded (Demo)");
+  alert("Ticket download feature coming soon!");
 }
 
-// Go Home
+// Go Home and clear booking data
 function goHome(){
+  localStorage.clear();
   window.location.href="index.html";
 }
+
 </script>
 
 </body>
-</html>
+</html> 

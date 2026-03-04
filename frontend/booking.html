@@ -89,14 +89,18 @@ button:hover{transform:scale(1.05);}
 </div>
 
 <script>
-// Show selected event
-const selectedEvent = localStorage.getItem("selectedEvent");
+// ✅ Get selected event safely
+const selectedEvent = localStorage.getItem("selectedEvent") || "Unknown Event";
 document.getElementById("eventTitle").innerText = "Booking for " + selectedEvent;
 
-// Generate seats
+// Clear old seats when page loads (important fix)
+localStorage.removeItem("seats");
+
 const seatContainer = document.getElementById("seatContainer");
 let bookedSeats = [];
+let selectedSeats = [];
 
+// ✅ Fetch already booked seats
 async function loadBookedSeats() {
   try {
     const response = await fetch(`http://localhost:5000/booked-seats?event=${encodeURIComponent(selectedEvent)}`);
@@ -105,13 +109,13 @@ async function loadBookedSeats() {
     createSeats();
   } catch(err) {
     console.log("Failed to fetch booked seats:", err);
-    // If fetch fails, all seats enabled
     createSeats();
   }
 }
 
 function createSeats() {
   seatContainer.innerHTML = "";
+
   for(let i=1;i<=20;i++){
     const seat = document.createElement("div");
     seat.classList.add("seat");
@@ -121,76 +125,114 @@ function createSeats() {
       seat.classList.add("disabled");
     } else {
       seat.onclick = function(){
-        document.querySelectorAll(".seat").forEach(s => {
-          if(!s.classList.contains("disabled")) s.style.background="#ff416c";
-        });
-        seat.style.background="green";
-        localStorage.setItem("seat", seat.innerText);
+        const seatNumber = seat.innerText;
+
+        if(selectedSeats.includes(seatNumber)){
+          selectedSeats = selectedSeats.filter(s => s !== seatNumber);
+          seat.style.background="#ff416c";
+        } else {
+          selectedSeats.push(seatNumber);
+          seat.style.background="green";
+        }
+
+        localStorage.setItem("seats", JSON.stringify(selectedSeats));
         updateConfirmation();
       };
     }
+
     seatContainer.appendChild(seat);
   }
 }
 
-// Update mini confirmation
+// ✅ Update confirmation box
 function updateConfirmation(){
   const name = document.getElementById("name").value.trim();
   const email = document.getElementById("email").value.trim();
   const usn = document.getElementById("usn").value.trim();
   const year = document.getElementById("year").value;
   const dept = document.getElementById("department").value;
-  const seat = localStorage.getItem("seat");
+  const seats = JSON.parse(localStorage.getItem("seats") || "[]");
 
-  if(name && email && usn && year!=="Select Year" && dept!=="Choose Department" && seat){
+  if(name && email && usn && year!=="Select Year" && dept!=="Choose Department" && seats.length > 0){
+
     document.getElementById("confirmationBox").style.display="block";
+
     document.getElementById("summaryText").innerText = `
 Name: ${name}
 Email: ${email}
 USN: ${usn}
 Year: ${year}
 Dept: ${dept}
-Seat: ${seat}
+Seats: ${seats.join(", ")}
 Event: ${selectedEvent}
     `;
-    // QR code
-    document.getElementById("qrPreview").src = 
-      "https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=" + encodeURIComponent(`Event:${selectedEvent} | Seat:${seat} | Name:${name}`);
+
+    document.getElementById("qrPreview").src =
+      "https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=" +
+      encodeURIComponent(`Event:${selectedEvent} | Seats:${seats.join(",")} | Name:${name}`);
+
   } else {
     document.getElementById("confirmationBox").style.display="none";
   }
 }
 
-// Listen for input changes to update confirmation
+// Listen for input changes
 ["name","email","usn","year","department"].forEach(id=>{
   document.getElementById(id).addEventListener("input", updateConfirmation);
   document.getElementById(id).addEventListener("change", updateConfirmation);
 });
 
-// Load booked seats from backend
+// Load booked seats
 loadBookedSeats();
 
-// Payment button
+// ✅ Payment button
 document.getElementById("paymentBtn").addEventListener("click", function() {
+
   const name = document.getElementById("name").value.trim();
   const email = document.getElementById("email").value.trim();
   const usn = document.getElementById("usn").value.trim();
   const year = document.getElementById("year").value;
   const dept = document.getElementById("department").value;
-  const seat = localStorage.getItem("seat");
+  const seats = JSON.parse(localStorage.getItem("seats") || "[]");
 
-  if(!name || !email || !usn || year==="Select Year" || dept==="Choose Department" || !seat){
-      alert("Please fill all fields and select a seat!");
+  if(!name || !email || !usn || year==="Select Year" || dept==="Choose Department" || seats.length === 0){
+      alert("Please fill all fields and select at least one seat!");
       return;
   }
 
-  localStorage.setItem("name", name);
-  localStorage.setItem("email", email);
-  localStorage.setItem("usn", usn);
-  localStorage.setItem("year", year);
-  localStorage.setItem("dept", dept);
+  fetch("http://localhost:5000/book", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      name: name,
+      email: email,
+      usn: usn,
+      year: year,
+      dept: dept,
+      event: selectedEvent,
+      seats: seats
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
 
-  window.location.href = "payment.html";
+    // ✅ Store everything BEFORE redirect
+    localStorage.setItem("ticketID", data.ticket_id);
+    localStorage.setItem("selectedEvent", selectedEvent);
+    localStorage.setItem("seats", JSON.stringify(seats));
+    localStorage.setItem("name", name);
+    localStorage.setItem("email", email);
+    localStorage.setItem("usn", usn);
+    localStorage.setItem("year", year);
+    localStorage.setItem("dept", dept);
+
+    alert("Booking Successful!");
+    window.location.href = "payment.html";
+  })
+  .catch(err => {
+      alert("Booking failed!");
+      console.log(err);
+  });
 });
 </script>
 </body>
